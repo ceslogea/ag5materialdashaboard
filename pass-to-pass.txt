@@ -1,0 +1,148 @@
+Scale the app
+
+docker swarm init
+docker stack deploy -c docker-compose.yml dashboard
+docker stack rm dashboard
+docker swarm leave --force
+
+
+
+Start swarm in HyperV Vm
+docker-machine ssh myvm1 "docker swarm init --advertise-addr 172.23.5.103"
+
+Join another VM to HyperVM
+docker-machine ssh myvm2 "docker swarm join --token SWMTKN-1-3es3p1hyl7pmy9i28fy8ugydxmmac77co6hswoiefmm70rzb39-7pykfyhojmcm448vejwi208f4 172.23.5.103:2377"
+
+Leaving a swarm, from each node.
+swarm leave 
+
+
+
+docker-machine create -d hyperv --hyperv-virtual-switch "Default Switch" myvm1
+docker-machine ssh myvm1 "docker swarm init --advertise-addr 172.23.5.101"
+
+docker-machine ssh myvm1 "docker swarm join-token manager"
+
+
+docker-machine ssh myvm2 " docker swarm join --token SWMTKN-1-4ysqr2cst5tgst5bweccgqn56ozzjceod6x5tjabgeeha3zc5w-7u46ui5m3k4iwk8p7pyecaiyj 172.23.5.100:2377"
+
+# Connect to VMs shell 
+
+# LINUX
+docker-machine env myv1
+export DOCKER_TLS_VERIFY="1"
+export DOCKER_HOST="tcp://172.23.5.105:2376"
+export DOCKER_CERT_PATH="/Users/celso.bernar/.docker/machine/machines/myv1"
+export DOCKER_MACHINE_NAME="myv1"
+
+# WINDOWS
+docker-machine env myvm1
+$Env:DOCKER_TLS_VERIFY = "1"
+$Env:DOCKER_HOST = "tcp://172.23.5.100:2376"
+$Env:DOCKER_CERT_PATH = "C:\Users\celso.bernar\.docker\machine\machines\myvm1"
+$Env:DOCKER_MACHINE_NAME = "myvm1"
+$Env:COMPOSE_CONVERT_WINDOWS_PATHS = "true"
+
+
+eval $(docker-machine env myvm1)
+
+eval $(docker-machine env -u)     # Disconnect shell from VMs, use native docker
+docker-machine stop $(docker-machine ls -q)               # Stop all running VMs
+docker-machine rm $(docker-machine ls -q) # Delete all VMs and their disk images
+
+
+
+
+# inspect:
+docker-machine ls
+docker stack ls
+docker stack ps dashboard
+docker service ls
+docker node ls
+
+docker swarm init --force-new-cluster
+
+C:\siege-windows>siege -c70 -t30s -v -p http://172.23.5.105:3009/dashboard > log.txt
+p
+
+https://docs.docker.com/config/pruning/
+http://www.blog.labouardy.com/category/docker/page/3/
+https://docs.docker.com/config/pruning/
+https://github.com/moby/moby/issues/34384
+https://docs.docker.com/engine/swarm/admin_guide/
+https://www.youtube.com/watch?v=Vu9lfasgPaM&t=357s
+https://www.google.com.br/search?q=docker+swarm+ingress&rlz=1C1SQJL_pt-BRBR787BR787&source=lnms&tbm=isch&sa=X&ved=0ahUKEwi8xN6xj__dAhUFf5AKHaSwCoQQ_AUIDigB&biw=1920&bih=938#imgrc=gNuiSs7SMNLdkM:
+https://www.youtube.com/watch?v=191EXPsewAI&list=PLB1hpnUGshULerdlzMknMLrHI810xIBJv&index=53   #SIEGE
+https://dzone.com/articles/swarmprom-prometheus-monitoring-for-docker-swarm
+https://www.udemy.com/docker-mastery/?siteID=JVFxdTr9V80-AC89hv8PRpwSVaZLTqIQvw&LSNPUBID=JVFxdTr9V80
+https://github.com/ewwink/siege-windows
+https://www.joedog.org/
+MARATONA kb8's
+https://www.youtube.com/watch?v=191EXPsewAI&list=PLB1hpnUGshULerdlzMknMLrHI810xIBJv&index=53
+
+docker container prune --filter "until=24h"
+docker image prune -a --filter "until=24h"
+docker network prune --filter "until=24h"
+
+
+
+
+
+
+#!/bin/sh
+
+for i in 1 2 3; do
+  docker-machine create -d hyperv --hyperv-virtual-switch "Default Switch" myvm$i
+done
+
+MANAGER_IP=$(docker-machine ip myvm1)
+
+eval $(docker-machine env myvm1)
+
+docker swarm init --advertise-addr $MANAGER_IP
+
+TOKEN=$(docker swarm join-token -q worker)
+
+for i in 2 3; do
+  docker-machine ssh myvm$i "docker swarm join --token $TOKEN $MANAGER_IP:2377"
+done
+
+echo "Swarm cluster has been successfuly created !"
+
+docker node ls
+
+
+
+
+start chrome http://$MANAGER_IP:3000 /
+start chrome http://$MANAGER_IP:9000 /
+start chrome http://$MANAGER_IP:8080 /
+start chrome http://$MANAGER_IP:3000 /
+start chrome http://$MANAGER_IP:9094 / 
+start chrome http://$MANAGER_IP:9090 /
+start chrome http://$MANAGER_IP:9093 /
+
+
+
+
+
+
+push image 
+
+
+
+
+SET UP SLACK CREDENTIALS
+
+HUB_USR=celsogea
+
+docker build --rm -f alertmanager\\Dockerfile -t alertmanager:v1 alertmanager
+
+docker image tag alertmanager:v1 $HUB_USR/alertmanager:v1
+
+docker push $HUB_USR/alertmanager:v1
+
+
+
+
+docker stack deploy -c docker-compose-monitor.yml monitor

@@ -1,0 +1,125 @@
+version: '3.3'
+
+services:
+
+    # Web Appp Angular 5 Dashboard WebApp
+    dashaboardapp:
+        # image: celsogea/dashboard:latest
+        image: celsogea/dashboard:v1
+        deploy:
+            replicas: 4
+            update_config:
+                parallelism: 2
+                delay: 10s
+            restart_policy:
+                condition: on-failure
+            resources:
+                limits:
+                    cpus: "0.2"
+                    memory: 100M
+            restart_policy:
+                condition: on-failure
+        ports:
+            - 3000:80
+        networks:
+            - dashaboardappnet
+    
+    # Docker Visualizer: 
+    visualizer:
+        image: dockersamples/visualizer:stable
+        ports:
+            - "8080:8080"
+        volumes:
+            - "/var/run/docker.sock:/var/run/docker.sock"
+        deploy:
+            placement:
+                constraints: 
+                    - node.role == manager
+        networks:
+            - dashaboardappnet
+
+    telegraf:
+        image: telegraf:1.3
+        networks:
+            - dashaboardappnet
+        volumes:
+            - /var/run/docker.sock:/var/run/docker.sock
+        configs:
+          - source: telegraf-config
+            target: /etc/telegraf/telegraf.conf
+        deploy:
+            restart_policy:
+                condition: on-failure
+            mode: global
+
+    influxdb:
+        image: influxdb:1.2
+        networks:
+            - dashaboardappnet
+        deploy:
+            restart_policy:
+                condition: on-failure
+            placement:
+                constraints:
+                    - node.role == worker
+                    
+    grafana:
+        image: grafana/grafana:4.3.2
+        ports:
+            - "3005:3000"
+        networks:
+            - dashaboardappnet
+        deploy:
+            restart_policy:
+                condition: on-failure
+            placement:
+                constraints:
+                    - node.role == manager
+
+    #PORTAINER admin admin123
+    agent:
+        image: portainer/agent
+        environment:
+            # REQUIRED: Should be equal to the service name prefixed by "tasks." when
+            # deployed inside an overlay network
+            AGENT_CLUSTER_ADDR: tasks.agent
+            # AGENT_PORT: 9001
+            # LOG_LEVEL: debug
+        volumes:
+            - /var/run/docker.sock:/var/run/docker.sock
+            - /var/lib/docker/volumes:/var/lib/docker/volumes
+        networks:
+            - agent_network
+        deploy:
+            mode: global
+            placement:
+                constraints: [node.platform.os == linux]
+
+    portainer:
+        image: portainer/portainer
+        command: -H tcp://tasks.agent:9001 --tlsskipverify
+        ports:
+            - "9002:9000"
+        volumes:
+            - portainer_data:/data
+        networks:
+            - agent_network
+        deploy:
+            mode: replicated
+            replicas: 1
+            placement:
+                constraints: [node.role == manager]
+
+volumes:
+  portainer_data:
+
+volumes:
+  portainer_data:
+configs:
+  telegraf-config:
+    file: $PWD/conf/telegraf.conf
+networks:
+  dashaboardappnet:
+  agent_network:
+    driver: overlay
+    attachable: true

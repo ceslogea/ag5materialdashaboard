@@ -1,0 +1,74 @@
+<div class="main-content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12">
+                {{Customers}}
+                <div class="card">
+                    <div class="card-header card-header-danger">
+                        <div class="row">
+
+                            <div class="col-md-6">
+                                <h4 class="card-title ">{{tableTitle}}</h4>
+                                <p class="card-category">{{tableSubtitle}}</p>
+                            </div>
+                            <div class="col-md-6">
+                                <a style="float: right;" [routerLink]="['/customer-profile']" class="btn btn-round btn-fill btn-default">
+                                    <i class="material-icons">
+                                        add
+                                    </i>
+                                    New Customer
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+
+                            <table class="table">
+                                <thead class=" text-primary">
+                                    <th>
+                                        ID
+                                    </th>
+                                    <th>
+                                        Name
+                                    </th>
+                                    <th>
+                                        Country
+                                    </th>
+                                    <th>
+                                        City
+                                    </th>
+                                    <th>
+                                        Action
+                                    </th>
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let data of dataSource; let $index = index">
+                                        <td>
+                                            {{data.id}}
+                                        </td>
+                                        <td>
+                                            {{data.firstName}}
+                                        </td>
+                                        <td>
+                                            {{data.lastName}}
+                                        </td>
+                                        <td>
+                                            {{data.address.city}}
+                                        </td>
+                                        <td>
+                                            <a [routerLink]="['/customer-profile-edit', data.id]"> Editar </a>
+                                            <a [routerLink]="['/customer-profile-delete', data.id]"> Delete </a>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>

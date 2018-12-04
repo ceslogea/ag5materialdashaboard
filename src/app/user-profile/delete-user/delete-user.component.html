@@ -1,0 +1,65 @@
+<div class="main-content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header card-header-danger">
+                        <h4 class="card-title">Edit Profile</h4>
+                        <p class="card-category">Complete your profile</p>
+                    </div>
+                    <div class="card-body">
+                        
+                        <form>
+                            <input placeholder="Fist Name"   type="hidden"  [(ngModel)]="data.id" name="id" required>
+                            
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <mat-form-field class="example-full-width">
+                                            <input disabled matInput placeholder="Fist Name"   type="text"  [(ngModel)]="data.firstName" name="firstName" required maxlength="150">
+                                    </mat-form-field>
+                                </div>
+                                <div class="col-md-8">
+                                    <mat-form-field class="example-full-width">
+                                        <input disabled  matInput placeholder="Last Name" type="text" [(ngModel)]="data.lastName" name="lastName" required maxlength="150">
+                                    </mat-form-field>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <mat-form-field class="example-full-width">
+                                        <input disabled matInput placeholder="Telefone"  type="text" [(ngModel)]="data.phone" name="phone" maxlength="150">
+                                    </mat-form-field>
+                                </div>
+                                <div class="col-md-8">
+                                    <mat-form-field class="example-full-width">
+                                        <input disabled matInput placeholder="Adress"  type="text" [(ngModel)]="data.address.street" name="street" maxlength="150">
+                                    </mat-form-field>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <mat-form-field class="example-full-width">
+                                        <input disabled  matInput placeholder="City"  type="text" [(ngModel)]="data.address.city" name="city" maxlength="150">
+                                    </mat-form-field>
+                                </div>
+                                <div class="col-md-4">
+                                    <mat-form-field class="example-full-width">
+                                        <input disabled matInput placeholder="Country"  type="text" [(ngModel)]="data.address.country" name="country" maxlength="150">
+                                    </mat-form-field>
+                                </div>
+                                <div class="col-md-4">
+                                    <mat-form-field class="example-full-width">
+                                        <input disabled matInput placeholder="Postal Code"  type="text" [(ngModel)]="data.address.zipcode" name="zipcode" maxlength="150">
+                                    </mat-form-field>
+                                </div>
+                            </div>
+                            <button mat-raised-button [type]="submit" (click)="submit()" class="btn btn-danger pull-right">Excluir</button>
+                            <div class="clearfix"></div>
+                        </form>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
